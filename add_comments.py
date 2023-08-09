@@ -9,7 +9,7 @@ dir_path = sys.argv[1]
 
 # Define a function to add comments to a given code
 def create_comments(code):
-    openai.api_key = "<YOUR_API_KEY>"
+    openai.api_key = "YOUR_API_KEY"
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0613",
@@ -20,11 +20,11 @@ def create_comments(code):
             },
             {
                 "role": "user",
-                "content": "Code: \n```rs\nfn set_player_bitboard(&mut self, color: Color, bitboard: Bitboard) {\n    self.player_bitboards[bb_color_idx(color)] = bitboard;\n}\n```",
+                "content": "Code: \n```rs\npub fn new(position: Position, color: Color, type_: PieceKind) -> Square {\n        Square {\n            position,\n            color,\n            type_,\n            piece: color as PieceAsByte + type_ as PieceAsByte,\n        }\n    }\n```",
             },
             {
                 "role": "assistant",
-                "content": "/**\n * Sets the bitboard for the given player color.\n *\n * This function updates the bitboard for the specified player color in the Chessboard struct.\n *\n * @param color - The player color whose bitboard is to be set.\n * @param bitboard - The bitboard to set for the specified player color. */\n",
+                "content": "/// Creates a new square.\n///\n/// # Arguments\n/// * `position` - The position of the square.\n/// * `color` - The color of the piece.\n///\n/// # Returns\n/// A new square.\n///\n/// # Example\n/// ```rs\n///     let square = Square::new(4, Color::Black, PieceKind::King);\n/// ```",
             },
             {"role": "user", "content": f"Code: \n```rs\n{code}\n```"},
         ],
@@ -53,7 +53,7 @@ for root, dirs, files in os.walk(dir_path):
                     comments_for_function = create_comments(function)
 
                     # Add the comments to the function
-                    commented_function = comments_for_function + function + "\n"
+                    commented_function = comments_for_function + "\n" + function + "\n"
 
                     # Replace the function with the commented function
                     content = content.replace(function, commented_function)
