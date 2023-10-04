@@ -1,3 +1,4 @@
+
 # Final complete Python script for converting .cbz files to .epub with specified naming
 import os
 import re
@@ -14,7 +15,7 @@ def generate_epub_name(original_name):
         volume_number = int(volume_number_match.group(1))
         return f"OP - Volume {volume_number}.epub"
     else:
-        return None
+        return f"OP - {original_name}.epub"
 
 
 # Function to convert a single CBZ file to EPUB format
@@ -30,9 +31,10 @@ def convert_cbz_to_epub(cbz_path, epub_path):
 
     # Open the CBZ file and extract images
     image_files = []
+    chapters = []
     with ZipFile(cbz_path, 'r') as zip_ref:
         image_files = sorted([n for n in zip_ref.namelist() if n.lower().endswith(('.png', '.jpg', '.jpeg'))])
-        for img_file in image_files:
+        for index, img_file in enumerate(image_files):
             img_data = zip_ref.read(img_file)
 
             # Add image to the EPUB book
@@ -40,6 +42,18 @@ def convert_cbz_to_epub(cbz_path, epub_path):
             img_item.file_name = img_file.split('/')[-1]
             img_item.content = img_data
             book.add_item(img_item)
+
+            # Create a chapter for each image
+            chapter = epub.EpubHtml(title=f'Page {index + 1}', file_name=f'page_{index + 1}.xhtml', lang='en')
+            chapter.content = f'<img src="{img_item.file_name}" alt="Page {index + 1}" />'
+            chapters.append(chapter)
+            book.add_item(chapter)
+
+    # Create a table of contents
+    book.toc = chapters
+
+    # Update the spine to include chapters
+    book.spine = ['nav'] + chapters
 
     # Create a navigation page (mandatory)
     book.add_item(epub.EpubNcx())
@@ -65,5 +79,4 @@ def convert_all_cbz_to_epub(folder_path):
             convert_cbz_to_epub(cbz_path, epub_path)
             print(f"Converted {filename} to {new_epub_name}.")
 
-# Uncomment the line below to run the script on a real folder.
 convert_all_cbz_to_epub('/Users/aamindehkordi/Downloads/one piece/colored/mana-one-piece-digital-colored-comics')
