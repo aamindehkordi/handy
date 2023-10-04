@@ -66,4 +66,4 @@ def convert_all_cbz_to_epub(folder_path):
             print(f"Converted {filename} to {new_epub_name}.")
 
 # Uncomment the line below to run the script on a real folder.
-convert_all_cbz_to_epub('')
+convert_all_cbz_to_epub('/Users/aamindehkordi/Downloads/one piece/colored/mana-one-piece-digital-colored-comics')
